@@ -1,5 +1,3 @@
-
-
 import numpy as np
 
 from nbodykit.lab import *
@@ -20,6 +18,12 @@ b1 = 2.0
 
 cat = LogNormalCatalog(Plin=Plin, nbar=3e-3, BoxSize=1380., Nmesh=256, bias=b1, seed=42)
 
+positions = cat['Position'].compute()
+weights = cat['Weight'].compute()
+
+# save to a text file
+np.savez_compressed("mock_catalog.npz", pos=positions, weight=weights)
+
 # convert the catalog to the mesh, with CIC interpolation
 real_mesh = cat.to_mesh(compensated=True, window='cic', position='Position')
 
@@ -27,6 +31,14 @@ real_mesh = cat.to_mesh(compensated=True, window='cic', position='Position')
 r = FFTPower(real_mesh, mode='2d', Nmu=5)
 pkmu = r.power
 
+# plot the biased linear power spectrum
+k = numpy.logspace(-2, 0, 512)
+P_k = b1**2 * Plin(k)
+
+# stack k and P(k) into one array
+data = np.column_stack([k, P_k])
+# save to text
+np.savetxt("power_spectrum.txt", data, header="k Pk")
 
 # plot each mu bin
 for i in range(pkmu.shape[1]):
@@ -34,10 +46,7 @@ for i in range(pkmu.shape[1]):
     label = r'$\mu$=%.1f' %pkmu.coords['mu'][i]
     plt.loglog(Pk['k'], Pk['power'].real - Pk.attrs['shotnoise'], label=label)
 
-# plot the biased linear power spectrum
-k = numpy.logspace(-2, 0, 512)
-plt.loglog(k, b1**2 * Plin(k), c='k', label=r'$b_1^2 P_\mathrm{lin}$')
-
+plt.loglog(k,P_k,  c='k', label=r'$b_1^2 P_\mathrm{lin}$')
 # add a legend and axes labels
 plt.legend(loc=0, ncol=2, fontsize=16)
 plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
