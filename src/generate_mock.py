@@ -16,14 +16,6 @@ cosmo = cosmology.Planck15
 Plin = cosmology.LinearPower(cosmo, redshift, transfer='EisensteinHu')
 b1 = 2.0
 
-# evaluate the linear power spectrum created by intial conditions over range of k
-k = np.logspace(-3, 1, 500)  # h/Mpc
-Pk_lin = Plin(k)             # units (Mpc/h)^3
-Pk_true = b1**2 * Pk_lin     # biased spectrum
-
-# Save
-np.savetxt("Pk_true.txt", np.c_[k, Pk_true])
-
 cat = LogNormalCatalog(Plin=Plin, nbar=3e-3, BoxSize=1380., Nmesh=256, bias=b1, seed=42)
 
 
@@ -47,7 +39,7 @@ P_k = b1**2 * Plin(k)
 # stack k and P(k) into one array
 data = np.column_stack([k, P_k])
 # save to text
-np.savetxt("power_spectrum1.txt", data, header="k Pk")
+np.savetxt("power_spectrum.txt", data, header="k Pk")
 
 # plot each mu bin
 for i in range(pkmu.shape[1]):
