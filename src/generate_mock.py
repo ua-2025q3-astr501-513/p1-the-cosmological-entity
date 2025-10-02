@@ -16,7 +16,7 @@ cosmo = cosmology.Planck15
 Plin = cosmology.LinearPower(cosmo, redshift, transfer='EisensteinHu')
 b1 = 2.0
 
-# Evaluate over a k grid
+# evaluate the linear power spectrum created by intial conditions over range of k
 k = np.logspace(-3, 1, 500)  # h/Mpc
 Pk_lin = Plin(k)             # units (Mpc/h)^3
 Pk_true = b1**2 * Pk_lin     # biased spectrum
