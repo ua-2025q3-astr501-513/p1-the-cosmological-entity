@@ -13,17 +13,20 @@ from scipy.interpolate import CubicSpline
 
 # read in powerspectrum files
 # true power spectrum
-pk_true = np.loadtxt("power_spectrum.txt", skiprows=1)
+pk_true = np.loadtxt("../power_spectrum.txt", skiprows=1)
+# print(pk_true.shape)
 k_true = pk_true[:, 0]
 P_k_true = pk_true[:, 1]
 
 # FFT power spectrum
-pk_fft = np.loadtxt("power_spec_npfft.txt", skiprows=1)
-k_fft = pk_fft[:, 0]
-P_k_fft = pk_fft[:, 1]
+pk_fft = np.loadtxt("../power_spec_npfft.txt", skiprows=0)
+# print(pk_fft.shape)
+k_fft = pk_fft[0, :]
+P_k_fft = pk_fft[1, :]
 
 # # 2pt correlation function power spectrum
-pk_2PCP = np.loadtxt(".txt", skiprows=1) # add in 2PCP powerspectrum text file
+pk_2PCP = np.loadtxt("../pk_from_xi_0.05.txt", skiprows=1)
+# print(pk_2PCP.shape)
 k_2PCP = pk_2PCP[:, 0]
 P_k_2PCP = pk_2PCP[:, 1]
 
@@ -33,6 +36,7 @@ plt.loglog(k_fft,P_k_fft, c = "dodgerblue", label = 'FFT', ls = 'dashdot')
 plt.loglog(k_2PCP,P_k_2PCP, c = "mediumseagreen", label = '2PCP', ls = 'dotted')
 plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
 plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
+plt.title("Powerspectra")
 plt.legend()
 plt.show()
 
@@ -50,7 +54,7 @@ interp_fft = CubicSpline(k_fft, P_k_fft)
 Pi_fft = interp_fft(k_values)
 
 # 2pt correlation power spectrum
-interp_2pcp = CubicSpline(k_fft, P_k_2PCP)
+interp_2pcp = CubicSpline(k_2PCP, P_k_2PCP)
 Pi_2pcp = interp_2pcp(k_values)
 
 # compute the residuals
@@ -58,17 +62,32 @@ res_fft = []
 res_2pcp = []
 
 for x, y, z in zip(Pi_true, Pi_fft, Pi_2pcp):
-    res_fft = np.append(res_fft, Pi_true - Pi_fft)
-    res_2pcp = np.append(res_2pcp, Pi_true - Pi_2pcp)
+    res_fft = np.append(res_fft, x - y)
+    res_2pcp = np.append(res_2pcp, x - z)
 
 # plot the residuals
-plt.semilogx(k_values, res_fft, c = "dodgerblue", label = 'FFT', marker = 'o')
-plt.semilogx(k_values, res_2pcp, c = "mediumseagreen", label = '2PCP', marker = 'o')
+plt.semilogx(k_values, res_fft, c = "dodgerblue", label = 'FFT', marker = '.')
+plt.semilogx(k_values, res_2pcp, c = "mediumseagreen", label = '2PCP', marker = '.')
+plt.hlines(0, np.min(k_values) - 10, 1, colors = "grey", linestyles = 'dashed')
 plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
 plt.ylabel(r"residuals [$h^{-3} \mathrm{Mpc}^3$]")
+plt.title("Residuals")
 plt.legend()
 plt.show()
 
 # ----------------------------------------------------------------------------------------------
-# calculate 
+# define function for chi squared 
+def chi_squared(calc, true):
+    chi = []
+    for c, t in zip(calc, true):
+        num = (c - t)**2
+        chi = np.append(chi, num/t)
+    chi2 = np.sum(chi)
+    return chi2
 
+# chi^2 for FFT
+chi2_fft = chi_squared(Pi_fft, Pi_true)
+chi2_2pcp = chi_squared(Pi_2pcp, Pi_true)
+print("----Chi-Squared Results----")
+print("FFT:", chi2_fft)
+print("2PCP:", chi2_2pcp)
