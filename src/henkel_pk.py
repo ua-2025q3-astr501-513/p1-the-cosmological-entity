@@ -1,6 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+
+import os
+import ctypes
+import sys
+
+# Add GSL library path
+gsl_path = "/usr/lib/x86_64-linux-gnu/libgsl.so.27.0.0"
+
+ctypes.CDLL(gsl_path, mode=ctypes.RTLD_GLOBAL)
+
 from Corrfunc.theory.DD import DD
 from Corrfunc.utils import convert_3d_counts_to_cf
 
@@ -67,20 +77,20 @@ class CorrfuncCalculator:
         # DD
         start = time.time()
         DD_counts = DD(autocorr=1, nthreads=self.nthreads, binfile=self.bins,
-                       X1=self.x, Y1=self.y, Z1=self.z)
+                       X1=self.x, Y1=self.y, Z1=self.z, boxsize=self.boxsize)
         print(f"DD done in {time.time() - start:.2f} s")
 
         # DR
         start = time.time()
         DR_counts = DD(autocorr=0, nthreads=self.nthreads, binfile=self.bins,
                        X1=self.x, Y1=self.y, Z1=self.z,
-                       X2=self.rand_X, Y2=self.rand_Y, Z2=self.rand_Z)
+                       X2=self.rand_X, Y2=self.rand_Y, Z2=self.rand_Z, boxsize=self.boxsize)
         print(f"DR done in {time.time() - start:.2f} s")
 
         # RR
         start = time.time()
         RR_counts = DD(autocorr=1, nthreads=self.nthreads, binfile=self.bins,
-                       X1=self.rand_X, Y1=self.rand_Y, Z1=self.rand_Z)
+                       X1=self.rand_X, Y1=self.rand_Y, Z1=self.rand_Z, boxsize=self.boxsize)
         print(f"RR done in {time.time() - start:.2f} s")
 
         # Correlation function
