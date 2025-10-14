@@ -14,10 +14,7 @@ Notes:
 ### **Method 1: Hankel Transform** ###
 1. **Two-Point Correlation Function ξ(r)**  
    - The `CorrfuncCalculator` class computes pair counts (DD, DR, RR) using the [Corrfunc](https://github.com/manodeep/Corrfunc) library.  
-   - The correlation function is computed via the Landy-Szalay estimator:  
-     $$
-     \xi(r) = \frac{DD - 2DR + RR}{RR}
-     $$
+   - The correlation function is computed via the Landy-Szalay estimator $\xi(r) = \frac{DD - 2DR + RR}{RR}$
    - A random catalog is generated for normalization.  
    - ξ(r) is saved to a text file and plotted for visualization.
 
