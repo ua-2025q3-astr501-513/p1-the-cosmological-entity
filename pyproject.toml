@@ -7,5 +7,6 @@ dependencies = [
     "nbodykit",
     "matplotlib",
     "scipy",
-    "Corrfunc"
+    "Corrfunc", 
+    "glob",
 ]
