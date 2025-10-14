@@ -89,3 +89,29 @@ This project is your chance to be creative, apply what you have
 learned so far, and work collaboratively on a meaningful computational
 astrophysics problem.
 We look forward to your results!
+
+
+## Running this project
+
+To install the project, run
+    ```bash
+    pip install -e .
+    ```
+
+This project includes the generation of mock catalogs of galaxies to use for the calculation of the matter power spectrum. To create the mock catalogs, we use **nbodykit**, which is a free and openly accessible Python package which creates a mock catalog using a predetermined parameters for the matter powerspectrum. It is necessary to install nbodykit to properly create the galaxy mocks, with the necessary documentation at [nbodykit installation documentation](https://nbodykit.readthedocs.io/en/latest/getting-started/install.html). The documentation includes several methods to download, but we used Anaconda, creating an environment to run `generate_mock.py`. 
+
+After installing **nbodykit**, there are a few other necessary dependencies required to run the rest of the project. Since we produced our own mock catalogs, we don't have any other data necessary to download or install. The other dependencies necessary to run the python scripts can be found in `pyproject.toml`. 
+
+All following steps should be ran within the main directory of this project, using 
+    ```bash
+    python src/<script_name>
+    ```
+
+The first step of the project is to create the mock catalogs by running `generate_mock.py`. This will produce a mock catalog from which we find the power spectrum. Both the mock catalog and the power spectrum are saved within the data directory. The power spectrum used to produce the mock catalog can be calculated and saved using `calc_pk.py`. This saves the "truth" power spectra in the data directory. These should be ran individually for each mock catalog produced. 
+
+To run the fourier transform method, run `fft_pk.ipynb`. This loads the mock catalog and performs the fourier transfrom to produce the power spectrum for each mock catalog. The power spectrum is saved in the data directory. This script must be run for each mock catalog. 
+
+To run the Hankel method, execute `run_henkel_pk.py`. This method requires [Corrfunc](https://github.com/manodeep/Corrfunc/tree/master) to be installed (documentation found [here](https://app.readthedocs.org/projects/corrfunc/downloads/pdf/docs/)). **Corrfunc** is a high-performance Python/C library designed to efficiently compute pair counts and two-point correlation functions for large-scale structure analyses. The Corrfunc documentation lists several prerequisites for installation and provides multiple installation methods. This method loads the mock catalog and saves the power spectrum information in the `data` directory. **Note:** this method is computationally expensive and can take a significant amount of time. We ran this only once for the entire mock catalog.
+
+Finally, to compare the results of the different power spectra, run `err_analysis.py`. This will print results and save them to a text file. This script only needs to run once for all results. 
+
