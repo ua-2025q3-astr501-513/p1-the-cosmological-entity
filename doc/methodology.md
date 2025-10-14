@@ -3,11 +3,11 @@
 This project computes the power spectrum of a mock galaxy catalog through two ways: Fast-Fourier Transform and Hankel Transform of the two-point correlation function. The workflow is as follows:
 
 1. ## **Mock Catalog Generation** ##
-The mock catalog is generated using the Python package nbodykit at redshift z=0.55 with a galaxy bias b=2 in a box of side length 1380 Mpc/h. The resulting catalog contains approximately 8 million galaxies. Log-normal mocks assume that the matter density field follows a log-normal distribution, ensuring positive densities while mimicking mildly non-linear galaxy clustering. Galaxies are then sampled from this distribution following an input power spectrum, which serves as the "true" power spectrum for comparison with the estimated P(k).
+The mock catalog is generated using the Python package [nbodykit](https://nbodykit.readthedocs.io/en/latest/) at redshift z=0.55 with a galaxy bias b=2 in a box of side length 1380 Mpc/h. The resulting catalog contains approximately 8 million galaxies. Log-normal mocks assume that the matter density field follows a log-normal distribution, ensuring positive densities while mimicking mildly non-linear galaxy clustering. Galaxies are then sampled from this distribution following an input power spectrum, which serves as the "true" power spectrum for comparison with the estimated P(k).
    - The mock catalog contains galaxy positions and optional weights in a `.npz` file within the `data` directory.  
 
 Notes:
-* The catalog uses a CIC interpolation for mesh assignment.
+* The catalog uses a Cloud-in-Cell (CIC) interpolation for mesh assignment.
 * Power spectrum P(k, μ) is computed for 5 μ bins; however, for this analysis, we effectively ignore the μ bins by combining them into a single μ bin.
 
 
@@ -31,3 +31,20 @@ Notes:
    - `data/Pk_from_xi_<sample_frac>_errors.png` — plot of P(k) with errors
 
 This method allows for power spectrum estimation on large-scales. It is computationally expensive and has large runtimes for large catalogs.
+
+### **Method  2: Fourier Transform** ###
+1. **Fourier Transform of Overdensity Field**
+   - The mock catalog is assigned to a 3D grid using the CIC mass assignment scheme
+   - The fractional overdensity is found at each grid point
+   - We calculate the Fourier Transform of the fractional overdensity field $\tilde{\delta}(k)$ using `numpy.fft.fftn`
+
+2. **Power Spectrum from Fourier Transform**
+   - P(k) is given by the variance of the Fourier modes 
+   - P(k) is binned in spherical shells and the average power within each k shell is saved to a file
+   - A log-log plot of the binned P(k) vs. k is plotted and saved
+
+3. **Outputs**
+   - `data/power_spec_npfft.txt` - power spectrum data
+   - `data/pk_fft.pnd` - plot of P(K)
+
+This method is much less computationally expensive and simple to implement. However, for a real survey with incomplete sky coverage, this method is less accurate than the Hankel transform.
