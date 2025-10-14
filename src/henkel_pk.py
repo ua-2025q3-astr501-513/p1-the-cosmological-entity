@@ -7,9 +7,10 @@ import ctypes
 import sys
 
 # Add GSL library path
-gsl_path = "/usr/lib/x86_64-linux-gnu/libgsl.so.27.0.0"
+# May need to include and edit path in commented lines below if Corrfunc had trouble finding the gsl library. 
+#gsl_path = "/usr/lib/x86_64-linux-gnu/libgsl.so.27.0.0"
 
-ctypes.CDLL(gsl_path, mode=ctypes.RTLD_GLOBAL)
+#ctypes.CDLL(gsl_path, mode=ctypes.RTLD_GLOBAL)
 
 from Corrfunc.theory.DD import DD
 from Corrfunc.utils import convert_3d_counts_to_cf
@@ -111,14 +112,14 @@ class CorrfuncCalculator:
 
     def save_xi(self, filename=None):
         if filename is None:
-            filename = f"xi_{self.sample_frac}.txt"
+            filename = f"data/xi_{self.sample_frac}.txt"
         np.savetxt(filename, np.column_stack([self.r_centers, self.cf, self.cf_err]),
                 header="r [Mpc/h]   xi(r)     xi_err(r)")
         print(f"Saved results to {filename}")
 
     def plot_xi(self, outfile=None):
         if outfile is None:
-            outfile = f"xi_plot_{self.sample_frac}.png"
+            outfile = f"data/xi_plot_{self.sample_frac}.png"
         plt.figure(figsize=(6, 4))
         #plt.loglog(self.r_centers, self.cf, marker='o', linestyle='-', color='b')
         plt.errorbar(self.r_centers, self.cf, yerr=self.cf_err, fmt='o-', capsize=4, color='b', label='P(k)')
@@ -185,13 +186,13 @@ class HenkelTransform:
 
     def save_pk(self, filename=None):
         if filename is None:
-            filename = f"pk_from_xi_{self.sample_frac}.txt"
+            filename = f"data/pk_from_xi_{self.sample_frac}.txt"
         np.savetxt(filename, np.column_stack([self.k, self.Pk, self.sigma_Pk]), header="k [h/Mpc]   P(k) [(Mpc/h)^3]   P(k) error [(Mpc/h)^3]")
         print(f"Saved results to {filename}")
 
     def plot_pk(self, outfile=None):
         if outfile is None:
-            outfile = f"Pk_from_xi_{self.sample_frac}_errors.png"
+            outfile = f"data/Pk_from_xi_{self.sample_frac}_errors.png"
         plt.figure(figsize=(6,4))
         plt.loglog(self.k, self.Pk, color = 'b', lw=1)
         plt.fill_between(self.k, self.Pk - self.sigma_Pk, self.Pk + self.sigma_Pk, color='b', alpha=0.3)
