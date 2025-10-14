@@ -70,18 +70,18 @@ cmap = plt.get_cmap("cool")
 colors = [cmap(i / (len(ffts)-1)) for i in range(len(ffts))]
 
 # plot true power spectra for 2PCP and FFT 1, then plot rest of FFT
-# plt.figure()
-# plt.loglog(k_true[0],Pk_true[0], c = "grey", label = 'true', ls = 'solid')
-# plt.loglog(k_2PCP,P_k_2PCP, c = "mediumseagreen", label = '2PCP', ls = 'dotted')
-# for i, (k, P) in enumerate(zip(k_ffts, Pk_ffts)):
-#     plt.loglog(k, P, c = colors[i], label = fr'FFT {i+1}', ls = 'dashdot')
-# plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
-# plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
-# plt.xlim(1e-2, 1e0)
-# plt.title("Power Spectra")
-# plt.legend()
-# # plt.savefig("results/powerspectrum.pdf")
-# plt.show()
+plt.figure()
+plt.loglog(k_true[0],Pk_true[0], c = "grey", label = 'true', ls = 'solid')
+plt.loglog(k_2PCP,P_k_2PCP, c = "mediumseagreen", label = '2PCP', ls = 'dotted')
+for i, (k, P) in enumerate(zip(k_ffts, Pk_ffts)):
+    plt.loglog(k, P, c = colors[i], label = fr'FFT {i+1}', ls = 'dashdot')
+plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
+plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
+plt.xlim(1e-2, 1e0)
+plt.title("Power Spectra")
+plt.legend()
+plt.savefig("results/powerspectrum.pdf")
+plt.show()
 
 # ----------------------------------------------------------------------------------------------
 # use an interpolator to find values at the same values of k
@@ -109,18 +109,18 @@ interp_2pcp = CubicSpline(k_2PCP, P_k_2PCP)
 PI_2pcp = interp_2pcp(k_values)
 
 # plot the interpolated power spectra
-# plt.figure()
-# plt.loglog(k_values,PI_true[0], c = "grey", label = 'true', ls = 'solid')
-# plt.loglog(k_values,PI_2pcp, c = "mediumseagreen", label = '2PCP', ls = 'dotted')
-# for i, P in enumerate(PI_fft):
-#     plt.loglog(k_values, P, c = colors[i], label = fr'FFT {i+1}', ls = 'dashdot')
-# plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
-# plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
-# plt.xlim(1e-2, 0.16)
-# plt.title("Interpolated Power Spectra")
-# plt.legend()
-# plt.savefig("results/interpolated_powerspectrum.pdf")
-# plt.show()
+plt.figure()
+plt.loglog(k_values,PI_true[0], c = "grey", label = 'true', ls = 'solid')
+plt.loglog(k_values,PI_2pcp, c = "mediumseagreen", label = '2PCP', ls = 'dotted')
+for i, P in enumerate(PI_fft):
+    plt.loglog(k_values, P, c = colors[i], label = fr'FFT {i+1}', ls = 'dashdot')
+plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
+plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
+plt.xlim(1e-2, 0.16)
+plt.title("Interpolated Power Spectra")
+plt.legend()
+plt.savefig("results/interpolated_powerspectrum.pdf")
+plt.show()
 
 # compute the residuals
 res_fft = []
@@ -145,17 +145,17 @@ res_2pcp = np.append(res_2pcp, PI_true[0] - PI_2pcp)
 cmap = plt.get_cmap("cool")
 colors = [cmap(i / (len(res_fft)-1)) for i in range(len(res_fft))]
 # plt.figure()
-# plt.semilogx(k_values, res_2pcp, c = "mediumseagreen", label = '2PCP', marker = '.')
-# for i, res in enumerate(res_fft):
-#     plt.semilogx(k_values, res, c = colors[i], label = fr'FFT {i+1}', marker = ".")
-# plt.hlines(0, np.min(k_values) - 10, 1, colors = "grey", linestyles = 'dashed')
-# plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
-# plt.ylabel(r"residuals [$h^{-3} \mathrm{Mpc}^3$]")
-# plt.title("Residuals")
-# plt.xlim(1e-2, 0.16)
-# plt.legend()
-# # plt.savefig("results/residuals.pdf")
-# plt.show()
+plt.semilogx(k_values, res_2pcp, c = "mediumseagreen", label = '2PCP', marker = '.')
+for i, res in enumerate(res_fft):
+    plt.semilogx(k_values, res, c = colors[i], label = fr'FFT {i+1}', marker = ".")
+plt.hlines(0, np.min(k_values) - 10, 1, colors = "grey", linestyles = 'dashed')
+plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
+plt.ylabel(r"residuals [$h^{-3} \mathrm{Mpc}^3$]")
+plt.title("Residuals")
+plt.xlim(1e-2, 0.16)
+plt.legend()
+plt.savefig("results/residuals.pdf")
+plt.show()
 
 # ----------------------------------------------------------------------------------------------
 # define function for chi squared
