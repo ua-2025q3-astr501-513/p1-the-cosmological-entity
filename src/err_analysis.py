@@ -111,15 +111,19 @@ PI_2pcp = interp_2pcp(k_values)
 
 # compute the residuals
 res_fft = []
+diff_fft = []
 res_2pcp = []
 
 # FFT
 for true, fft in zip(PI_true, PI_fft):
     single_res = []
+    single_diff = []
     for x, y in zip(true, fft):
-        single_res.append(x -y) # true - measured
+        single_res.append(x - y) # true - measured
+        single_diff.append(y - x) # measured - true
     
     res_fft.append(single_res)
+    diff_fft.append(single_diff)
 
 # 2PCP
 res_2pcp = np.append(res_2pcp, PI_true[0] - PI_2pcp)
@@ -141,12 +145,15 @@ plt.savefig("results/residuals.pdf")
 # plt.show()
 
 # ----------------------------------------------------------------------------------------------
-# define function for chi squared 
-def chi_squared(calc, true):
+# define function for chi squared
+def chi_squared(calc, true, err = None):
     chi = []
     for c, t in zip(calc, true):
         num = (c - t)**2
-        chi = np.append(chi, num/t)
+        if err is None:
+            chi = np.append(chi, num/t)
+        else:
+            chi = np.append(chi, num/(err**2))
     chi2 = np.sum(chi)
     return chi2
 
@@ -158,27 +165,41 @@ for fft, true in zip(PI_fft, PI_true):
     chi2_fft.append(chi2)
 
 # chi^2 for 2PCP
-chi2_2pcp = chi_squared(PI_2pcp, PI_true)
+chi2_2pcp = chi_squared(P_k_2PCP[:len(Pk_true[0])], Pk_true[0])
+
+# calculate for a truncated data set - come back to this probably
+t_index = np.where(k_2PCP < 0.15)
+P_2pcp_t = P_k_2PCP[:np.max(t_index)]
+P_true_t = Pk_true[0][:np.max(t_index)]
+P_err_t = err_2PCP[:np.max(t_index)]
+
+chi2_2pcp_t = chi_squared(P_2pcp_t, P_true_t)
+dof_t = np.max(t_index) - 1
+print(dof_t)
 
 # calculate reduced chi^2
 dof = len(k_values - 1)
 rchi2_fft = [chi2 / dof for chi2 in chi2_fft]
-print(len(rchi2_fft))
+# print(len(rchi2_fft))
 rchi2_2pcp = chi2_2pcp/dof
 
 print("from basic equation")
 print("----Reduced Chi-Squared Results----")
+print("2PCP Full :", chi2_2pcp/dof)
+print("2PCP Truncated:", chi2_2pcp_t/dof_t)
 for i in range(len(rchi2_fft)):
     print(fr'FFT {i}:', chi2_fft[i]/dof)
-print("2PCP:", chi2_2pcp/dof)
+
 
 # # save to text file
 with open("results/chi2_results.txt", "w") as f:
     f.write("from basic equation\n")
     f.write("----Reduced Chi-Squared Results----\n")
+    f.write(f"2PCP Full: {chi2_2pcp/dof}\n")
+    f.write(f"2PCP Truncated: {chi2_2pcp_t/dof_t}\n")
     for i in range(len(rchi2_fft)):
         f.write(f"FFT {i}: {chi2_fft[i]/dof}\n")
-    f.write(f"2PCP: {chi2_2pcp/dof}\n")
+    
 
 # ----------------------------------------------------------------------------------------------
 # calculate chi squared using covariance matrix
@@ -194,10 +215,10 @@ P_fft = np.array(PI_fft)
 fft_cov = np.cov(P_fft, rowvar=False)
 
 # # compute chi squared
-for r in res_fft:
+for r in diff_fft:
     R_fft = np.array(r)
-    print(R_fft.shape)
-    chi2_fft_cov = R_fft.T @ fft_cov @ R_fft / dof
+    # print(R_fft.shape)
+    chi2_fft_cov = R_fft.T @ np.linalg.inv(fft_cov) @ R_fft
     print(chi2_fft_cov/dof)
 
 # chi2_fft_cov = R_fft.T @ fft_cov @ R_fft / dof

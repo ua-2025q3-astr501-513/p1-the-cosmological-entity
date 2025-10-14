@@ -54,3 +54,8 @@ Running this class will create a plot of the two-point correlation function and 
 `HenkelTransform` is initialized with the ξ(r) file generated from the `CorrfuncCalculator` class previously, along with box size and galaxy number density (nbar) initially used to generate the mok catalogs. The `datafile` input should be the two-point correlation file output by running the `CorrfuncCalculator` class. The `sample_frac` parameter should match the value used in the ξ(r) calculation. The `boxsize` and `nbar` parameters should match the values used for the initial mock catalog generation. 
 
 Running this class will create a plot the power spectrum and save the power spectrum values to a .txt file within the `data` folder.
+
+## Computing P(k) using the Fourier Transform ##
+
+## Comparing the Results ##
+
