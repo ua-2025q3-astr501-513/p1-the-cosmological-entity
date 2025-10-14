@@ -10,6 +10,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import CubicSpline
+from scipy.optimize import curve_fit
 
 # read in powerspectrum files
 # true power spectrum
@@ -25,10 +26,11 @@ k_fft = pk_fft[0, :]
 P_k_fft = pk_fft[1, :]
 
 # # 2pt correlation function power spectrum
-pk_2PCP = np.loadtxt("../pk_from_xi_0.05.txt", skiprows=1)
+pk_2PCP = np.loadtxt("../pk_from_xi_1.txt", skiprows=1)
 # print(pk_2PCP.shape)
 k_2PCP = pk_2PCP[:, 0]
 P_k_2PCP = pk_2PCP[:, 1]
+err_2PCP = pk_2PCP[:,2]
 
 # plot all of the power spectrums together
 plt.loglog(k_true,P_k_true, c = "black", label = 'true', ls = 'solid')
@@ -38,7 +40,7 @@ plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
 plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
 plt.title("Powerspectra")
 plt.legend()
-plt.show()
+# plt.show()
 
 # ----------------------------------------------------------------------------------------------
 # use an interpolator to find values at the same values of k
@@ -62,7 +64,7 @@ res_fft = []
 res_2pcp = []
 
 for x, y, z in zip(Pi_true, Pi_fft, Pi_2pcp):
-    res_fft = np.append(res_fft, x - y)
+    res_fft = np.append(res_fft, x - y) # true - measured
     res_2pcp = np.append(res_2pcp, x - z)
 
 # plot the residuals
@@ -73,7 +75,7 @@ plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
 plt.ylabel(r"residuals [$h^{-3} \mathrm{Mpc}^3$]")
 plt.title("Residuals")
 plt.legend()
-plt.show()
+# plt.show()
 
 # ----------------------------------------------------------------------------------------------
 # define function for chi squared 
@@ -88,6 +90,28 @@ def chi_squared(calc, true):
 # chi^2 for FFT
 chi2_fft = chi_squared(Pi_fft, Pi_true)
 chi2_2pcp = chi_squared(Pi_2pcp, Pi_true)
-print("----Chi-Squared Results----")
-print("FFT:", chi2_fft)
-print("2PCP:", chi2_2pcp)
+dof = len(k_values - 1)
+print("from basic equation")
+print("----Reduced Chi-Squared Results----")
+print("FFT:", chi2_fft/dof)
+print("2PCP:", chi2_2pcp/dof)
+
+
+# ----------------------------------------------------------------------------------------------
+# calculate chi squared using covariance matrix
+# pcov_fft = 
+# pcov_2pcp = 
+def pspec(k, A, p):
+    return A*k**p
+
+params, pcov_fft = curve_fit(pspec, k_values, Pi_fft, [1, 2])
+
+
+
+# compute chi squared
+chi2_fft_cov = res_fft.T @ pcov_fft @ res_fft / dof
+# chi2_2pcp_cov = res_2pcp.T @ pcov_2pcp @ res_2pcp / dof
+print("from covariance matrix")
+print("----Reduced Chi-Squared Results----")
+print("FFT:", chi2_fft_cov/dof)
+# print("2PCP:", chi2_2pcp_cov/dof)
