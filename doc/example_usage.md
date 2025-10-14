@@ -53,9 +53,20 @@ Running this class will create a plot of the two-point correlation function and 
 ### Hankel Transform ###
 `HenkelTransform` is initialized with the ξ(r) file generated from the `CorrfuncCalculator` class previously, along with box size and galaxy number density (nbar) initially used to generate the mok catalogs. The `datafile` input should be the two-point correlation file output by running the `CorrfuncCalculator` class. The `sample_frac` parameter should match the value used in the ξ(r) calculation. The `boxsize` and `nbar` parameters should match the values used for the initial mock catalog generation. 
 
-Running this class will create a plot the power spectrum and save the power spectrum values to a .txt file within the `data` folder.
+Running this class will create a plot of the power spectrum and save the power spectrum values to a .txt file within the `data` folder.
 
 ## Computing P(k) using the Fourier Transform ##
+
+To compute the power spectrum using the Fourier Transform method, the user can run `fft_pk.py` in a terminal within the src directory. 
+```bash
+python fft_pk.py
+```
+This is a script that first loads the mock catalog (data/mock_catalog.npz) and assigns the galaxy positions to a 3D grid using the CIC mass assignment scheme. **numpy.fft.fn** is then used to calculate the Fourier transform of the fractional overdensity field. The power spectrum is equal to the squared Fourier amplitudes which are then binned spherically in k. There are multiple parameters that can be changed within the script: 
+1. the mock catalog used
+2. the number of k bins
+3. the true power spectrum used for comparison
+
+Running this script will create a plot of both the FFT calculated power spectrum and the true power spectrum. It was also save a .txt file with the binned power spectrum values and the values of the k bin centers within the `data` folder.
 
 ## Comparing the Results ##
 
