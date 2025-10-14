@@ -89,3 +89,19 @@ This project is your chance to be creative, apply what you have
 learned so far, and work collaboratively on a meaningful computational
 astrophysics problem.
 We look forward to your results!
+
+
+## Running this project
+(  * How to install and run your project   * Any dependencies or data required)
+To install the project, run
+    ```bash
+    pip install -e .
+    ```
+
+This project includes the generation of mock catalogs of galaxies to use for the calculation of the matter power spectrum. To create the mock catalogs, we use nbodykit, which is a free and openly accessible Python package which creates a mock catalog using a predetermined parameters for the matter powerspectrum. It is necessary to install nbodykit to properly create the galaxy mocks, with the necessary documentation at [nbodykit installation documentation](https://nbodykit.readthedocs.io/en/latest/getting-started/install.html).
+
+
+
+
+
+
