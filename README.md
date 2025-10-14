@@ -104,7 +104,7 @@ After installing nbodykit, there are a few other necessary dependencies required
 
 All following steps should be ran within the main directory of this project, using 
     ```bash
-    python <script_name>
+    python src/<script_name>
     ```
 
 The first step of the project is to create the mock catalogs by running generate_mock.py. This will produce a mock catalog from which we find the power spectrum. Both the mock catalog and the power spectrum are saved within the data directory. The power spectrum used to produce the mock catalog can be calculated and saved using calc_pk.py. This saves the "truth" power spectra in the data directory. These should be ran individually for each mock catalog produced. 
