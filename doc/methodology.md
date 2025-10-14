@@ -2,7 +2,7 @@
 
 This project computes the power spectrum of a mock galaxy catalog through two ways: Fast-Fourier Transform and Hankel Transform of the two-point correlation function. The workflow is as follows:
 
-1. ## **Mock Catalog Generation** ##
+## **Mock Catalog Generation** ##
 The mock catalog is generated using the Python package [nbodykit](https://nbodykit.readthedocs.io/en/latest/) at redshift z=0.55 with a galaxy bias b=2 in a box of side length 1380 Mpc/h. The resulting catalog contains approximately 8 million galaxies. Log-normal mocks assume that the matter density field follows a log-normal distribution, ensuring positive densities while mimicking mildly non-linear galaxy clustering. Galaxies are then sampled from this distribution following an input power spectrum, which serves as the "true" power spectrum for comparison with the estimated P(k).
    - The mock catalog contains galaxy positions and optional weights in a `.npz` file within the `data` directory.  
 
