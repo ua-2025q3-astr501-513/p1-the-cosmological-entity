@@ -11,7 +11,6 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import CubicSpline
-from scipy.optimize import curve_fit
 import glob
 
 # define sorting method in case files aren't read in order
@@ -81,13 +80,13 @@ plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
 plt.xlim(1e-2, 1e0)
 plt.title("Power Spectra")
 plt.legend()
-plt.savefig("results/powerspectrum.pdf")
+# plt.savefig("results/powerspectrum.pdf")
 # plt.show()
 
 # ----------------------------------------------------------------------------------------------
 # use an interpolator to find values at the same values of k
 # define the values of k 
-k_values = np.linspace(0.01, 1, 1000)
+k_values = np.linspace(0.01, 0.15, 1000)
 
 # true power spectrum
 PI_true = []
@@ -109,6 +108,21 @@ for k, P in zip(k_ffts, Pk_ffts):
 interp_2pcp = CubicSpline(k_2PCP, P_k_2PCP)
 PI_2pcp = interp_2pcp(k_values)
 
+# plot the interpolated power spectra
+plt.figure()
+plt.loglog(k_values,PI_true[0], c = "grey", label = 'true', ls = 'solid')
+plt.loglog(k_values,PI_2pcp, c = "mediumseagreen", label = '2PCP', ls = 'dotted')
+for i, P in enumerate(PI_fft):
+    plt.loglog(k_values, P, c = colors[i], label = fr'FFT {i+1}', ls = 'dashdot')
+plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
+plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
+plt.xlim(1e-2, 0.16)
+plt.title("Interpolated Power Spectra")
+plt.legend()
+# plt.savefig("results/interpolated_powerspectrum.pdf")
+# plt.show()
+
+
 # compute the residuals
 res_fft = []
 diff_fft = []
@@ -128,11 +142,10 @@ for true, fft in zip(PI_true, PI_fft):
 # 2PCP
 res_2pcp = np.append(res_2pcp, PI_true[0] - PI_2pcp)
 
-
-
 # plot the residuals
 cmap = plt.get_cmap("cool")
 colors = [cmap(i / (len(res_fft)-1)) for i in range(len(res_fft))]
+plt.figure()
 plt.semilogx(k_values, res_2pcp, c = "mediumseagreen", label = '2PCP', marker = '.')
 for i, res in enumerate(res_fft):
     plt.semilogx(k_values, res, c = colors[i], label = fr'FFT {i+1}', marker = ".")
@@ -140,8 +153,9 @@ plt.hlines(0, np.min(k_values) - 10, 1, colors = "grey", linestyles = 'dashed')
 plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
 plt.ylabel(r"residuals [$h^{-3} \mathrm{Mpc}^3$]")
 plt.title("Residuals")
+plt.xlim(1e-2, 0.16)
 plt.legend()
-plt.savefig("results/residuals.pdf")
+# plt.savefig("results/residuals.pdf")
 # plt.show()
 
 # ----------------------------------------------------------------------------------------------
@@ -165,9 +179,13 @@ for fft, true in zip(PI_fft, PI_true):
     chi2_fft.append(chi2)
 
 # chi^2 for 2PCP
-chi2_2pcp = chi_squared(P_k_2PCP[:len(Pk_true[0])], Pk_true[0])
+chi2_2pcp = chi_squared(PI_2pcp, PI_true)
 
-# calculate for a truncated data set - come back to this probably
+# compare to non-interpolated data for 2PCP
+chi2_2pcp_noi = chi_squared(P_k_2PCP, Pk_true[0])
+dof_noi = len(P_k_2PCP) - 1
+
+# calculate for a truncated data set
 t_index = np.where(k_2PCP < 0.15)
 P_2pcp_t = P_k_2PCP[:np.max(t_index)]
 P_true_t = Pk_true[0][:np.max(t_index)]
@@ -185,13 +203,32 @@ rchi2_2pcp = chi2_2pcp/dof
 
 print("from basic equation")
 print("----Reduced Chi-Squared Results----")
-print("2PCP Full :", chi2_2pcp/dof)
-print("2PCP Truncated:", chi2_2pcp_t/dof_t)
+print("2PCP Full w/  Interpolation:", chi2_2pcp/dof)
+print("2PCP Full w/o Interpolation:", chi2_2pcp_noi/dof_noi)
+print("2PCP Truncated w/o Interpolation:", chi2_2pcp_t/dof_t)
 for i in range(len(rchi2_fft)):
     print(fr'FFT {i}:', chi2_fft[i]/dof)
 
+# ----------------------------------------------------------------------------------------------
+# calculate chi squared using covariance matrix
+# find the covariance matrix of the FFT mocks
+P_fft = np.array(PI_fft)
+fft_cov = np.cov(P_fft, rowvar=False)
 
-# # save to text file
+chi2_fft_cov = []
+for r in diff_fft:
+    R_fft = np.array(r)
+    # print(R_fft.shape)
+    chi2 = R_fft.T @ np.linalg.inv(fft_cov) @ R_fft
+    
+    chi2_fft_cov.append(chi2)
+
+print("from covariance matrix")
+print("----Reduced Chi-Squared Results----")
+for i in range(len(chi2_fft_cov)):
+    print(fr'FFT {i}:', chi2_fft_cov[i]/dof)
+
+# save all chi squared results to text file
 with open("results/chi2_results.txt", "w") as f:
     f.write("from basic equation\n")
     f.write("----Reduced Chi-Squared Results----\n")
@@ -199,31 +236,8 @@ with open("results/chi2_results.txt", "w") as f:
     f.write(f"2PCP Truncated: {chi2_2pcp_t/dof_t}\n")
     for i in range(len(rchi2_fft)):
         f.write(f"FFT {i}: {chi2_fft[i]/dof}\n")
+    f.write("from covariance matrix\n")
+    f.write("----Reduced Chi-Squared Results----\n")
+    for i in range(len(chi2_fft_cov)):
+        f.write(f"FFT {i}: {chi2_fft_cov[i]/dof}\n")
     
-
-# ----------------------------------------------------------------------------------------------
-# calculate chi squared using covariance matrix
-# pcov_fft = 
-# def pspec(k, A, p):
-#     return A*k**p
-
-# params, pcov_2pcp = curve_fit(pspec, k_values, PI_2pcp, [1, 2])
-# print(pcov_2pcp.shape)
-
-# find the covariance matrix of the FFT mocks
-P_fft = np.array(PI_fft)
-fft_cov = np.cov(P_fft, rowvar=False)
-
-# # compute chi squared
-for r in diff_fft:
-    R_fft = np.array(r)
-    # print(R_fft.shape)
-    chi2_fft_cov = R_fft.T @ np.linalg.inv(fft_cov) @ R_fft
-    print(chi2_fft_cov/dof)
-
-# chi2_fft_cov = R_fft.T @ fft_cov @ R_fft / dof
-# chi2_2pcp_cov = res_2pcp.T @ pcov_2pcp @ res_2pcp / dof
-# print("from covariance matrix")
-# print("----Reduced Chi-Squared Results----")
-# print("FFT:", chi2_fft_cov/dof)
-# print("2PCP:", chi2_2pcp_cov/dof)
