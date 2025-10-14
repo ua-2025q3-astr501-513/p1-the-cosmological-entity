@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-data = np.load("mock_catalog.npz")
+data = np.load("data/mock_catalog.npz")
 positions = data['pos']
 weights = data['weight']
 
