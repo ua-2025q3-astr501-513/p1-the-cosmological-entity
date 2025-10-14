@@ -70,17 +70,17 @@ cmap = plt.get_cmap("cool")
 colors = [cmap(i / (len(ffts)-1)) for i in range(len(ffts))]
 
 # plot true power spectra for 2PCP and FFT 1, then plot rest of FFT
-plt.figure()
-plt.loglog(k_true[0],Pk_true[0], c = "grey", label = 'true', ls = 'solid')
-plt.loglog(k_2PCP,P_k_2PCP, c = "mediumseagreen", label = '2PCP', ls = 'dotted')
-for i, (k, P) in enumerate(zip(k_ffts, Pk_ffts)):
-    plt.loglog(k, P, c = colors[i], label = fr'FFT {i+1}', ls = 'dashdot')
-plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
-plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
-plt.xlim(1e-2, 1e0)
-plt.title("Power Spectra")
-plt.legend()
-# plt.savefig("results/powerspectrum.pdf")
+# plt.figure()
+# plt.loglog(k_true[0],Pk_true[0], c = "grey", label = 'true', ls = 'solid')
+# plt.loglog(k_2PCP,P_k_2PCP, c = "mediumseagreen", label = '2PCP', ls = 'dotted')
+# for i, (k, P) in enumerate(zip(k_ffts, Pk_ffts)):
+#     plt.loglog(k, P, c = colors[i], label = fr'FFT {i+1}', ls = 'dashdot')
+# plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
+# plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
+# plt.xlim(1e-2, 1e0)
+# plt.title("Power Spectra")
+# plt.legend()
+# # plt.savefig("results/powerspectrum.pdf")
 # plt.show()
 
 # ----------------------------------------------------------------------------------------------
@@ -109,19 +109,18 @@ interp_2pcp = CubicSpline(k_2PCP, P_k_2PCP)
 PI_2pcp = interp_2pcp(k_values)
 
 # plot the interpolated power spectra
-plt.figure()
-plt.loglog(k_values,PI_true[0], c = "grey", label = 'true', ls = 'solid')
-plt.loglog(k_values,PI_2pcp, c = "mediumseagreen", label = '2PCP', ls = 'dotted')
-for i, P in enumerate(PI_fft):
-    plt.loglog(k_values, P, c = colors[i], label = fr'FFT {i+1}', ls = 'dashdot')
-plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
-plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
-plt.xlim(1e-2, 0.16)
-plt.title("Interpolated Power Spectra")
-plt.legend()
+# plt.figure()
+# plt.loglog(k_values,PI_true[0], c = "grey", label = 'true', ls = 'solid')
+# plt.loglog(k_values,PI_2pcp, c = "mediumseagreen", label = '2PCP', ls = 'dotted')
+# for i, P in enumerate(PI_fft):
+#     plt.loglog(k_values, P, c = colors[i], label = fr'FFT {i+1}', ls = 'dashdot')
+# plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
+# plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
+# plt.xlim(1e-2, 0.16)
+# plt.title("Interpolated Power Spectra")
+# plt.legend()
 # plt.savefig("results/interpolated_powerspectrum.pdf")
 # plt.show()
-
 
 # compute the residuals
 res_fft = []
@@ -145,17 +144,17 @@ res_2pcp = np.append(res_2pcp, PI_true[0] - PI_2pcp)
 # plot the residuals
 cmap = plt.get_cmap("cool")
 colors = [cmap(i / (len(res_fft)-1)) for i in range(len(res_fft))]
-plt.figure()
-plt.semilogx(k_values, res_2pcp, c = "mediumseagreen", label = '2PCP', marker = '.')
-for i, res in enumerate(res_fft):
-    plt.semilogx(k_values, res, c = colors[i], label = fr'FFT {i+1}', marker = ".")
-plt.hlines(0, np.min(k_values) - 10, 1, colors = "grey", linestyles = 'dashed')
-plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
-plt.ylabel(r"residuals [$h^{-3} \mathrm{Mpc}^3$]")
-plt.title("Residuals")
-plt.xlim(1e-2, 0.16)
-plt.legend()
-# plt.savefig("results/residuals.pdf")
+# plt.figure()
+# plt.semilogx(k_values, res_2pcp, c = "mediumseagreen", label = '2PCP', marker = '.')
+# for i, res in enumerate(res_fft):
+#     plt.semilogx(k_values, res, c = colors[i], label = fr'FFT {i+1}', marker = ".")
+# plt.hlines(0, np.min(k_values) - 10, 1, colors = "grey", linestyles = 'dashed')
+# plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
+# plt.ylabel(r"residuals [$h^{-3} \mathrm{Mpc}^3$]")
+# plt.title("Residuals")
+# plt.xlim(1e-2, 0.16)
+# plt.legend()
+# # plt.savefig("results/residuals.pdf")
 # plt.show()
 
 # ----------------------------------------------------------------------------------------------
@@ -193,10 +192,10 @@ P_err_t = err_2PCP[:np.max(t_index)]
 
 chi2_2pcp_t = chi_squared(P_2pcp_t, P_true_t)
 dof_t = np.max(t_index) - 1
-print(dof_t)
+# print(dof_t)
 
 # calculate reduced chi^2
-dof = len(k_values - 1)
+dof = len(k_values) - 1
 rchi2_fft = [chi2 / dof for chi2 in chi2_fft]
 # print(len(rchi2_fft))
 rchi2_2pcp = chi2_2pcp/dof
@@ -212,15 +211,17 @@ for i in range(len(rchi2_fft)):
 # ----------------------------------------------------------------------------------------------
 # calculate chi squared using covariance matrix
 # find the covariance matrix of the FFT mocks
-P_fft = np.array(PI_fft)
-fft_cov = np.cov(P_fft, rowvar=False)
-
+P_fft_cov = np.array(PI_fft)
+meanpk0 = np.mean(P_fft_cov, axis=0)
+deltaP = P_fft_cov - meanpk0 
+cov = np.dot(deltaP.T, deltaP) / (P_fft_cov.shape[0] - 1)
+# since we don't have enough mocks to use matrix multiplication to get 
+# full covariance matrix, use the diagonals for the error
+diag = np.diag(cov)
 chi2_fft_cov = []
-for r in diff_fft:
-    R_fft = np.array(r)
-    # print(R_fft.shape)
-    chi2 = R_fft.T @ np.linalg.inv(fft_cov) @ R_fft
-    
+for fft, true in zip(PI_fft, PI_true):
+    chi2 = chi_squared(fft, true, diag)
+
     chi2_fft_cov.append(chi2)
 
 print("from covariance matrix")
@@ -236,6 +237,7 @@ with open("results/chi2_results.txt", "w") as f:
     f.write(f"2PCP Truncated: {chi2_2pcp_t/dof_t}\n")
     for i in range(len(rchi2_fft)):
         f.write(f"FFT {i}: {chi2_fft[i]/dof}\n")
+    f.write("\n")
     f.write("from covariance matrix\n")
     f.write("----Reduced Chi-Squared Results----\n")
     for i in range(len(chi2_fft_cov)):
