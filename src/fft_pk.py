@@ -6,8 +6,18 @@ import matplotlib.pyplot as plt
 data = np.load("../data/mock_catalog.npz")
 positions = data['pos']
 
-# Assign mock particles to a grid
+# ---------------------------------Calculate the fractional overdensity field--------------------------------------------------
+
 def cic_grid(positions, Ngrid, boxsize):
+    """
+    Assign mock galaxies to a 3D grid using Cloud-in-Cell mass assignment
+    Inputs: 
+        positions: array of galaxy positions from mock catalog
+        Ngrid: number of grid cells per dimension, should be the same as Nmesh when creating mock
+        boxsize: mock catalog box size
+    Outputs: 
+        density: a 3D array containing the density of particles at each grid point
+    """
     # Create a 3d grid
     density = np.zeros((Ngrid, Ngrid, Ngrid), dtype=np.float32)
     # Convert physical coordinates to grid coordinates
@@ -18,7 +28,7 @@ def cic_grid(positions, Ngrid, boxsize):
     d = cell - i
 
     # Distribute weights using Cloud-in-Cell
-    # For CIC we assign weights to the 8 neighboring grid cells using the particle's 3D position
+    # For CIC we assign weights to the 8 neighboring grid points using the particle's 3D position
     for dx in (0,1):
         # Weight is 1 - offset for the lower axis point and weight equals offset for the upper axis point
         if dx == 0: 
@@ -39,9 +49,8 @@ def cic_grid(positions, Ngrid, boxsize):
                 jj = (i[:,1] + dy) % Ngrid
                 kk = (i[:,2] + dz) % Ngrid
                 w = wx * wy * wz
-                # Add the weights for each grid cell
+                # Add the weights for each grid point
                 np.add.at(density, (ii, jj, kk), w)
-    # Return the density of particles for each grid cell
     return density
 
 
@@ -52,6 +61,8 @@ rho = cic_grid(positions, Ngrid, boxsize)
 
 # Compute overdensity δ = (ρ - mean)/mean
 delta = (rho - rho.mean()) / rho.mean()
+
+#---------------------------------Calculate the power spectrum--------------------------------------------------
 
 # Take the FFT of the overdensity field
 delta_k = fftn(delta)
@@ -80,10 +91,10 @@ for i in range(len(k_bins)-1):
 # Compute bin centers
 k_mid = 0.5 * (k_bins[1:] + k_bins[:-1])
 # Save results
-np.savetxt('../data/power_spec_npfft_test.txt', [k_mid, Pk])
+np.savetxt('../data/power_spec_npfft.txt', [k_mid, Pk])
 
 
-# Plot log-log power spectrum
+# ---------------------------------Plot the power spectrum--------------------------------------------------
 
 plt.figure(figsize=(6,4))
 plt.loglog(k_mid, Pk, label='Measured P(k)')
