@@ -45,6 +45,6 @@ This method allows for power spectrum estimation on large-scales. It is computat
 
 3. **Outputs**
    - `data/power_spec_npfft.txt` - power spectrum data
-   - `data/pk_fft.pnd` - plot of P(K)
+   - `data/pk_fft.png` - plot of P(k)
 
 This method is much less computationally expensive and simple to implement. However, for a real survey with incomplete sky coverage, this method is less accurate than the Hankel transform.
