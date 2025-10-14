@@ -39,7 +39,7 @@ This method allows for power spectrum estimation on large-scales. It is computat
    - We calculate the Fourier Transform of the fractional overdensity field $\tilde{\delta}(k)$ using `numpy.fft.fftn`
 
 2. **Power Spectrum from Fourier Transform**
-   - P(k) is given by the variance of the Fourier modes 
+   - P(k) is given by the squared Fourier amplitudes 
    - P(k) is binned in spherical shells and the average power within each k shell is saved to a file
    - A log-log plot of the binned P(k) vs. k is plotted and saved
 

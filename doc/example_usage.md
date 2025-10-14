@@ -57,7 +57,7 @@ Running this class will create a plot of the power spectrum and save the power s
 
 ## Computing P(k) using the Fourier Transform ##
 
-To compute the power spectrum using the Fourier Transform method, the user can run `fft_pk.py` in a terminal within the src directory. 
+To compute the power spectrum using the Fourier Transform method, the user can run `fft_pk.py` in a terminal within the `src` directory. 
 ```bash
 python fft_pk.py
 ```
@@ -66,7 +66,7 @@ This is a script that first loads the mock catalog (data/mock_catalog.npz) and a
 2. the number of k bins
 3. the true power spectrum used for comparison
 
-Running this script will create a plot of both the FFT calculated power spectrum and the true power spectrum. It was also save a .txt file with the binned power spectrum values and the values of the k bin centers within the `data` folder.
+Running this script will create a plot of both the FFT calculated power spectrum and the true power spectrum. It will also save a .txt file with the binned power spectrum values and the values of the k bin centers within the `data` folder.
 
 ## Comparing the Results ##
 
