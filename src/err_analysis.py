@@ -29,7 +29,7 @@ def sort_key(filename):
 truth = glob.glob('data/power_spectrum*.txt')
 # sort the list
 truth.sort(key=sort_key)
-print(truth)
+# print(truth)
 
 k_true = []
 Pk_true = []
@@ -43,8 +43,9 @@ for file in truth:
 
 # fft power spectra
 ffts = glob.glob('data/power_spec_*.txt')
+# sort the list
 ffts.sort(key=sort_key)
-print(ffts)
+# print(ffts)
 
 # create lists for each set of power spectra
 k_ffts = []
@@ -78,9 +79,10 @@ for i, (k, P) in enumerate(zip(k_ffts, Pk_ffts)):
 plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
 plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
 plt.xlim(1e-2, 1e0)
+plt.title("Power Spectra")
 plt.legend()
 plt.savefig("results/powerspectrum.pdf")
-plt.show()
+# plt.show()
 
 # ----------------------------------------------------------------------------------------------
 # use an interpolator to find values at the same values of k
@@ -105,7 +107,7 @@ for k, P in zip(k_ffts, Pk_ffts):
 
 # 2pt correlation power spectrum
 interp_2pcp = CubicSpline(k_2PCP, P_k_2PCP)
-Pi_2pcp = interp_2pcp(k_values)
+PI_2pcp = interp_2pcp(k_values)
 
 # compute the residuals
 res_fft = []
@@ -120,7 +122,8 @@ for true, fft in zip(PI_true, PI_fft):
     res_fft.append(single_res)
 
 # 2PCP
-res_2pcp = np.append(res_2pcp, PI_true[0] - Pi_2pcp)
+res_2pcp = np.append(res_2pcp, PI_true[0] - PI_2pcp)
+
 
 
 # plot the residuals
@@ -135,7 +138,7 @@ plt.ylabel(r"residuals [$h^{-3} \mathrm{Mpc}^3$]")
 plt.title("Residuals")
 plt.legend()
 plt.savefig("results/residuals.pdf")
-plt.show()
+# plt.show()
 
 # ----------------------------------------------------------------------------------------------
 # define function for chi squared 
@@ -148,37 +151,58 @@ def chi_squared(calc, true):
     return chi2
 
 # chi^2 for FFT
-chi2_fft = chi_squared(Pi_fft, Pi_true)
-chi2_2pcp = chi_squared(Pi_2pcp, Pi_true)
+chi2_fft = []
+for fft, true in zip(PI_fft, PI_true):
+    chi2 = chi_squared(fft, true)
+
+    chi2_fft.append(chi2)
+
+# chi^2 for 2PCP
+chi2_2pcp = chi_squared(PI_2pcp, PI_true)
+
+# calculate reduced chi^2
 dof = len(k_values - 1)
+rchi2_fft = [chi2 / dof for chi2 in chi2_fft]
+print(len(rchi2_fft))
+rchi2_2pcp = chi2_2pcp/dof
+
 print("from basic equation")
 print("----Reduced Chi-Squared Results----")
-print("FFT:", chi2_fft/dof)
+for i in range(len(rchi2_fft)):
+    print(fr'FFT {i}:', chi2_fft[i]/dof)
 print("2PCP:", chi2_2pcp/dof)
 
-# savae to text file
+# # save to text file
 with open("results/chi2_results.txt", "w") as f:
     f.write("from basic equation\n")
     f.write("----Reduced Chi-Squared Results----\n")
-    f.write(f"FFT: {chi2_fft/dof}\n")
+    for i in range(len(rchi2_fft)):
+        f.write(f"FFT {i}: {chi2_fft[i]/dof}\n")
     f.write(f"2PCP: {chi2_2pcp/dof}\n")
-f.close()
 
 # ----------------------------------------------------------------------------------------------
 # calculate chi squared using covariance matrix
 # pcov_fft = 
-# pcov_2pcp = 
 # def pspec(k, A, p):
 #     return A*k**p
 
-# params, pcov_fft = curve_fit(pspec, k_values, Pi_fft, [1, 2])
+# params, pcov_2pcp = curve_fit(pspec, k_values, PI_2pcp, [1, 2])
+# print(pcov_2pcp.shape)
 
-
+# find the covariance matrix of the FFT mocks
+P_fft = np.array(PI_fft)
+fft_cov = np.cov(P_fft, rowvar=False)
 
 # # compute chi squared
-# chi2_fft_cov = res_fft.T @ pcov_fft @ res_fft / dof
-# # chi2_2pcp_cov = res_2pcp.T @ pcov_2pcp @ res_2pcp / dof
+for r in res_fft:
+    R_fft = np.array(r)
+    print(R_fft.shape)
+    chi2_fft_cov = R_fft.T @ fft_cov @ R_fft / dof
+    print(chi2_fft_cov/dof)
+
+# chi2_fft_cov = R_fft.T @ fft_cov @ R_fft / dof
+# chi2_2pcp_cov = res_2pcp.T @ pcov_2pcp @ res_2pcp / dof
 # print("from covariance matrix")
 # print("----Reduced Chi-Squared Results----")
 # print("FFT:", chi2_fft_cov/dof)
-# # print("2PCP:", chi2_2pcp_cov/dof)
+# print("2PCP:", chi2_2pcp_cov/dof)
