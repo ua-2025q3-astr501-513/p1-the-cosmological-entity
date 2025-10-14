@@ -2,12 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-import os
-import ctypes
-import sys
 
 # Add GSL library path
 # May need to include and edit path in commented lines below if Corrfunc had trouble finding the gsl library. 
+#import os
+#import ctypes
+#import sys
 #gsl_path = "/usr/lib/x86_64-linux-gnu/libgsl.so.27.0.0"
 
 #ctypes.CDLL(gsl_path, mode=ctypes.RTLD_GLOBAL)
@@ -144,7 +144,12 @@ class HenkelTransform:
         ----------
         datafile : str
             Path to 2pt correlation file
-
+        sample_frac : float
+            Fraction of data points to randomly sample (0 < sample_frac <= 1)
+        boxsize : float
+            Box size in Mpc/h
+        nbar : float
+            Number density of mock catalog in [h/Mpc]^3
         """
         self.datafile = datafile
         self.boxsize = boxsize
@@ -161,7 +166,7 @@ class HenkelTransform:
 
     def compute_pk(self):
         """Compute power spectrum"""
-        print("Computing power spectrum from Henkel Transformation")
+        print("Computing power spectrum from Hankel Transformation")
 
         Pk = np.zeros_like(self.k)
 
