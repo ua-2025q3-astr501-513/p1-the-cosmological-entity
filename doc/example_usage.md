@@ -24,11 +24,17 @@ in a terminal within the `src` directory.
 
 ## Computing P(k) using the Hankel Transform ##
 
-**A simple script to implemment this method can be found in `run_henkel_pk.py`**
+**A simple script to implemment this method can be found in `run_henkel_pk.py`** To execute this script, run
+
+```bash
+python run_henkel_pk.py
+```
+
+in a terminal within the `src` directory.
 
 To compute the power spectrum using the Hankel Transform method, the user can run `run_henkel_pk.py`. This is a script that implemments the `CorrfuncCalculator` class to compute the two-point correlation function and the  `HenkelTransform` to perform the Hankel Transformation of the correlation function results to get P(k). 
 
-# CorrfuncCalculator #
+### CorrfuncCalculator ###
 `CorrfuncCalculator` is initialized with the path to the mock catalog (data/mock_catalog.npz) and a fraction of the points to sample (sample_frac=0.01). The user can change the sample fraction, which defines the amount of data used (ex: sample_frac=0.01 means 1% of the data is used). When sample_frac < 1, the code randomly samples the catalog for points to include in the correlation function calculation. There are multiple parameters that can be changed:
 
 1. file path to mock catalog (datafile)
@@ -44,7 +50,7 @@ To compute the power spectrum using the Hankel Transform method, the user can ru
 
 Running this class will create a plot of the two-point correlation function and save the information to a .txt file within the `data` folder.
 
-# Hankel Transform #
+### Hankel Transform ###
 `HenkelTransform` is initialized with the ξ(r) file generated from the `CorrfuncCalculator` class previously, along with box size and galaxy number density (nbar) initially used to generate the mok catalogs. The `datafile` input should be the two-point correlation file output by running the `CorrfuncCalculator` class. The `sample_frac` parameter should match the value used in the ξ(r) calculation. The `boxsize` and `nbar` parameters should match the values used for the initial mock catalog generation. 
 
 Running this class will create a plot the power spectrum and save the power spectrum values to a .txt file within the `data` folder.
