@@ -65,14 +65,14 @@ P_k_2PCP = pk_2PCP[:, 1]
 err_2PCP = pk_2PCP[:,2]
 
 # plot all of the power spectra together
-# get colors
+# get colors for plot
 cmap = plt.get_cmap("cool")
 colors = [cmap(i / (len(ffts)-1)) for i in range(len(ffts))]
 
 # plot true power spectra for 2PCP and FFT 1, then plot rest of FFT
 plt.figure()
 plt.loglog(k_true[0],Pk_true[0], c = "grey", label = 'true', ls = 'solid')
-plt.loglog(k_2PCP,P_k_2PCP, c = "mediumseagreen", label = '2PCP', ls = 'dotted')
+plt.loglog(k_2PCP,P_k_2PCP, c = "mediumseagreen", label = '2PCP', ls = 'dashed')
 for i, (k, P) in enumerate(zip(k_ffts, Pk_ffts)):
     plt.loglog(k, P, c = colors[i], label = fr'FFT {i+1}', ls = 'dashdot')
 plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
@@ -111,7 +111,7 @@ PI_2pcp = interp_2pcp(k_values)
 # plot the interpolated power spectra
 plt.figure()
 plt.loglog(k_values,PI_true[0], c = "grey", label = 'true', ls = 'solid')
-plt.loglog(k_values,PI_2pcp, c = "mediumseagreen", label = '2PCP', ls = 'dotted')
+plt.loglog(k_values,PI_2pcp, c = "mediumseagreen", label = '2PCP', ls = 'dashed')
 for i, P in enumerate(PI_fft):
     plt.loglog(k_values, P, c = colors[i], label = fr'FFT {i+1}', ls = 'dashdot')
 plt.xlabel(r"$k$ [$h \mathrm{Mpc}^{-1}$]")
@@ -124,19 +124,15 @@ plt.show()
 
 # compute the residuals
 res_fft = []
-diff_fft = []
 res_2pcp = []
 
 # FFT
 for true, fft in zip(PI_true, PI_fft):
     single_res = []
-    single_diff = []
     for x, y in zip(true, fft):
         single_res.append(x - y) # true - measured
-        single_diff.append(y - x) # measured - true
     
     res_fft.append(single_res)
-    diff_fft.append(single_diff)
 
 # 2PCP
 res_2pcp = np.append(res_2pcp, PI_true[0] - PI_2pcp)
@@ -192,12 +188,10 @@ P_err_t = err_2PCP[:np.max(t_index)]
 
 chi2_2pcp_t = chi_squared(P_2pcp_t, P_true_t)
 dof_t = np.max(t_index) - 1
-# print(dof_t)
 
 # calculate reduced chi^2
 dof = len(k_values) - 1
 rchi2_fft = [chi2 / dof for chi2 in chi2_fft]
-# print(len(rchi2_fft))
 rchi2_2pcp = chi2_2pcp/dof
 
 print("from basic equation")
@@ -215,6 +209,7 @@ P_fft_cov = np.array(PI_fft)
 meanpk0 = np.mean(P_fft_cov, axis=0)
 deltaP = P_fft_cov - meanpk0 
 cov = np.dot(deltaP.T, deltaP) / (P_fft_cov.shape[0] - 1)
+
 # since we don't have enough mocks to use matrix multiplication to get 
 # full covariance matrix, use the diagonals for the error
 diag = np.diag(cov)
