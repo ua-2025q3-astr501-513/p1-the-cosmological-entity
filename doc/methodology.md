@@ -48,3 +48,25 @@ This method allows for power spectrum estimation on large-scales. It is computat
    - `data/pk_fft.png` - plot of P(k)
 
 This method is much less computationally expensive and simple to implement. However, for a real survey with incomplete sky coverage, this method is less accurate than the Hankel transform.
+
+### **Results and Error Analysis** ###
+1. **Results**
+   - P(k) and k values are saved as individual data vectors from respective data files 
+   - A log-log plot of P(k) vs. k for each method is plotted and saved 
+
+2. **Error Analysis**
+   - A range of k values is defined to produce identical k-binning for all power spectra
+   - We produce interpolated P(k) for each data set using `scipy.interpolate.CubicSpline`
+   - A log-log plot of interpolated P(k) vs. k is plotted and saved
+   - Residuals, R(k), for both Fourier Transform and Hankel Transform are computed
+   - A semilogx plot of R(k) vs. k is plotted and saved 
+   - A function for $\chi^2$ is defined
+   - $\chi_R^2$ is computed for Fourier Transform and Hankel Transform and saved to text file in two methods:
+      a. general equation using residuals
+      b. determination of covariance matrix to find variance, then calculated using as errors
+
+3. **Outputs**
+   - `results/chi2_results.txt` - $\chi_R^2$ results for all methods
+   - `results/interpolated_powerspectrum.png` - plot of interpolated P(k) for both transforms
+   - `results/powerspectrum.png` - plot of original P(k) for both transforms
+   - `results/residuals.png` - plot of residuals of interpolated P(k)
