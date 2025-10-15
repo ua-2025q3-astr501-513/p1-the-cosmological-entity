@@ -62,7 +62,6 @@ for file in ffts:
 pk_2PCP = np.loadtxt("data/pk_from_xi_1.txt", skiprows=1)
 k_2PCP = pk_2PCP[:, 0]
 P_k_2PCP = pk_2PCP[:, 1]
-err_2PCP = pk_2PCP[:,2]
 
 # plot all of the power spectra together
 # get colors for plot
@@ -80,7 +79,7 @@ plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
 plt.xlim(1e-2, 1e0)
 plt.title("Power Spectra")
 plt.legend()
-plt.savefig("results/powerspectrum.pdf")
+plt.savefig("results/powerspectrum.png", dpi=600, bbox_inches='tight')
 plt.show()
 
 # ----------------------------------------------------------------------------------------------
@@ -119,7 +118,7 @@ plt.ylabel(r"$P(k)$ [$h^{-3} \mathrm{Mpc}^3$]")
 plt.xlim(1e-2, 0.16)
 plt.title("Interpolated Power Spectra")
 plt.legend()
-plt.savefig("results/interpolated_powerspectrum.pdf")
+plt.savefig("results/interpolated_powerspectrum.png", dpi=600, bbox_inches='tight')
 plt.show()
 
 # compute the residuals
@@ -130,12 +129,12 @@ res_2pcp = []
 for true, fft in zip(PI_true, PI_fft):
     single_res = []
     for x, y in zip(true, fft):
-        single_res.append(x - y) # true - measured
+        single_res.append(y - x) # measured - model
     
     res_fft.append(single_res)
 
 # 2PCP
-res_2pcp = np.append(res_2pcp, PI_true[0] - PI_2pcp)
+res_2pcp = np.append(res_2pcp, PI_2pcp - PI_true[0])
 
 # plot the residuals
 cmap = plt.get_cmap("cool")
@@ -150,7 +149,7 @@ plt.ylabel(r"residuals [$h^{-3} \mathrm{Mpc}^3$]")
 plt.title("Residuals")
 plt.xlim(1e-2, 0.16)
 plt.legend()
-plt.savefig("results/residuals.pdf")
+plt.savefig("results/residuals.png", dpi=600, bbox_inches='tight')
 plt.show()
 
 # ----------------------------------------------------------------------------------------------
@@ -184,7 +183,6 @@ dof_noi = len(P_k_2PCP) - 1
 t_index = np.where(k_2PCP < 0.15)
 P_2pcp_t = P_k_2PCP[:np.max(t_index)]
 P_true_t = Pk_true[0][:np.max(t_index)]
-P_err_t = err_2PCP[:np.max(t_index)]
 
 chi2_2pcp_t = chi_squared(P_2pcp_t, P_true_t)
 dof_t = np.max(t_index) - 1
