@@ -70,3 +70,8 @@ Running this script will create a plot of both the FFT calculated power spectrum
 
 ## Comparing the Results ##
 
+To compare the power spectra, residuals, and $\chi_R^2$ produced by the Fourier Transform method and the Hankel Transform method, the user can run `err_analsys.py` in a terminal within the `src` directory. 
+```bash
+python err_analysis.py
+```
+This is a script that loads the power spectrum results from the associated data files in the `data` directory for each Transform method. First, all the results are combined into one plot to display the difference in the true power spectrum from the power spectra produced by the Fourier Transform and Hankel Transform methods. **scipy.interpolate.CubicSpline** is then used to produce interpolated versions of the power spectra, including the true power spectrum, to enable direct comparisons and calculation of residuals. The interpolated power spectra are then used to calculate the residuals and a reduced $\chi^2$ value for each method. This script will load all files in the `data` directory following the established naming conventions by `fft_pk.py` and `run_henkel_pk.py`. To change these files, adjust the data file in the script. All plots and text files presenting the results are saved in `results` as PNGs and text files. 
