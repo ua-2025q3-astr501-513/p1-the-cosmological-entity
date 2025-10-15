@@ -107,11 +107,11 @@ All following steps should be ran within the main directory of this project, usi
     python src/<script_name>
     ```
 
-The first step of the project is to create the mock catalogs by running `generate_mock.py`. This will produce a mock catalog from which we find the power spectrum. Both the mock catalog and the power spectrum are saved within the data directory. The power spectrum used to produce the mock catalog can be calculated and saved using `calc_pk.py`. This saves the "truth" power spectra in the data directory. These should be ran individually for each mock catalog produced. 
+The first step of the project is to create the mock catalogs by running `generate_mock.py`. This will produce a mock catalog from which we find the power spectrum. Both the mock catalog and the power spectrum are saved within the data directory. The power spectrum used to produce the mock catalog can be calculated and saved using `calc_pk.py`. This saves the "truth" power spectra in the `data` directory. These should be ran individually for each mock catalog produced. 
 
 To run the fourier transform method, run `fft_pk.ipynb`. This loads the mock catalog and performs the fourier transfrom to produce the power spectrum for each mock catalog. The power spectrum is saved in the data directory. This script must be run for each mock catalog. 
 
 To run the Hankel method, execute `run_henkel_pk.py`. This method requires [Corrfunc](https://github.com/manodeep/Corrfunc/tree/master) to be installed (documentation found [here](https://app.readthedocs.org/projects/corrfunc/downloads/pdf/docs/)). **Corrfunc** is a high-performance Python/C library designed to efficiently compute pair counts and two-point correlation functions for large-scale structure analyses. The Corrfunc documentation lists several prerequisites for installation and provides multiple installation methods. This method loads the mock catalog and saves the power spectrum information in the `data` directory. **Note:** this method is computationally expensive and can take a significant amount of time. We ran this only once for the entire mock catalog.
 
-Finally, to compare the results of the different power spectra, run `err_analysis.py`. This will print results and save them to a text file. This script only needs to run once for all results. 
+Finally, to compare the results of the different power spectra, run `err_analysis.py`. This will print results and save them to a text file. This script only needs to run once for all results. Visualizations of the power spectra, the interpolated power spectra, and the residuals will be saved in the `results` directory in both PDF and PNG formats. Additionally, the $\chi_R^2$ results are saved to the `results` directory in a text file. 
 
