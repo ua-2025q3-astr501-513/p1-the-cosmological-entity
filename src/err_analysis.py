@@ -155,14 +155,15 @@ plt.show()
 # ----------------------------------------------------------------------------------------------
 # define function for chi squared
 def chi_squared(calc, true, err = None):
-    chi = []
-    for c, t in zip(calc, true):
-        num = (c - t)**2
-        if err is None:
-            chi = np.append(chi, num/t)
-        else:
-            chi = np.append(chi, num/(err**2))
-    chi2 = np.sum(chi)
+    calc = np.array(calc)
+    true = np.array(true)
+    
+    num = (calc - true)**2
+    if err is None:
+        chi2 = np.sum(num/true)
+    else:
+        chi2 = np.sum(num/(err))
+    
     return chi2
 
 # chi^2 for FFT
@@ -174,10 +175,6 @@ for fft, true in zip(PI_fft, PI_true):
 
 # chi^2 for 2PCP
 chi2_2pcp = chi_squared(PI_2pcp, PI_true)
-
-# compare to non-interpolated data for 2PCP
-chi2_2pcp_noi = chi_squared(P_k_2PCP, Pk_true[0])
-dof_noi = len(P_k_2PCP) - 1
 
 # calculate for a truncated data set
 t_index = np.where(k_2PCP < 0.15)
@@ -195,7 +192,6 @@ rchi2_2pcp = chi2_2pcp/dof
 print("from basic equation")
 print("----Reduced Chi-Squared Results----")
 print("2PCP Full w/  Interpolation:", chi2_2pcp/dof)
-print("2PCP Full w/o Interpolation:", chi2_2pcp_noi/dof_noi)
 print("2PCP Truncated w/o Interpolation:", chi2_2pcp_t/dof_t)
 for i in range(len(rchi2_fft)):
     print(fr'FFT {i}:', chi2_fft[i]/dof)
