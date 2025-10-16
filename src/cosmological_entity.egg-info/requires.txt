@@ -1,0 +1,5 @@
+numpy
+nbodykit
+matplotlib.pyplot
+scipy
+Corrfunc

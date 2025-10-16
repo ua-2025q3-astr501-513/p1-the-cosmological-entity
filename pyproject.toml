@@ -1,0 +1,13 @@
+[project]
+name = "cosmological-entity"
+version = "1.1"
+license = {file="LICENSE"}
+dependencies = [
+    "numpy",
+    "nbodykit",
+    "matplotlib",
+    "scipy",
+    "Corrfunc", 
+    "glob",
+    "re"
+]

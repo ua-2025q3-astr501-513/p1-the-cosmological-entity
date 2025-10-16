@@ -1,89 +1,43 @@
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/nqfiwWTG)
+[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=20651122&assignment_repo_type=AssignmentRepo)
 # ASTR 513 Mid-Term Project
 
-Welcome to the repository of the **Mid-Term Project** for ASTR 513.
-This project is worth **20 points** and gives you the opportunity to
-apply the numerical techniques we have covered in the course so far.
+## Running this project
 
-You are recommended to work in teams of 3 to 6 students.
-To form team, come up with a unique team name and put it in this
-[GitHub Classroom link](https://classroom.github.com/a/nqfiwWTG).
+To install the project, run
+    ```bash
+    pip install -e .
+    ```
 
-## Timeline & Deliverables
+## Overview
+This project generates mock catalogs and computes the matter power spectrum using two independent methods. The resulting power spectra are then compared to evaluate consistency between approaches. Mock catalogs are generated using **nbodykit**, an open-source Python package for large-scale structure simulations. An installation of nbodykit is required to create the galaxy mocks, with the necessary documentation at [nbodykit installation documentation](https://nbodykit.readthedocs.io/en/latest/getting-started/install.html). Multiple installation options are provided, but this project was developed using a conda environment in which `generate_mock.py` was executed. 
 
-* Prsentation dates:
-  October 13th or 15th
-* Submission deadline:
-  By 11:59pm (Arizona tgime) on the day of your presentation
-* Submission platform: GitHub Classroom
+In addition to nbodykit, several other Python dependencies are required. These are listed in `pyproject.toml`. Since we produced our own mock catalogs, no external data downloads are required.
 
-Your final submission should include:
+All following steps should be run within the main directory of this project, using 
+    ```bash
+    python src/<script_name>
+    ```
 
-* Project code (inside the `src/` directory of this git repository)
-* Documentation (inside the `doc/` directory)
-* Presentation materials (slides or Jupyter notebook, also version
-  controlled with this git repository)
+## Workflow
+1. **Generate Mock Catalogs**
 
-Only **one submission per team** is needed.
+Create the mock catalogs by running `generate_mock.py`. This script produces mock catalogs and saves them within the data directory. The ("truth") power spectrum used to produce the mock catalog can be calculated using `calc_pk.py` and is stored in the `data` directory. Each mock catalog should have a matching truth power spectrum saved.
 
-**Late submissions may not be accepted. Please plan ahead.**
+2. **Compute Power Spectrum via Hankel Method**
+   
+Execute `run_henkel_pk.py`. This method requires [Corrfunc](https://github.com/manodeep/Corrfunc/tree/master) to be installed (documentation found [here](https://app.readthedocs.org/projects/corrfunc/downloads/pdf/docs/)). **Corrfunc** is a high-performance Python/C library designed to efficiently compute pair counts and two-point correlation functions for large-scale structure analyses. The Corrfunc documentation lists several prerequisites for installation and provides multiple installation methods. This method loads the mock catalog and saves the power spectrum information in the `data` directory. **Note:** this method is computationally expensive and can take a significant amount of time. We ran this only once for the entire mock catalog.
 
-## Project Ideas
+3. **Compute Power Spectrum via Fourier Transform**
 
-The file `doc/ideas.yaml` contains a compilation of topics from
-homework set \#1.
-Please use this list to help you look for other students with similar
-interests and form teams.
+Run `fft_pk.py`. This loads the mock catalog and calculates the power spectrum using the squared Fourier modes of the galaxy overdensity field. The power spectrum values and a plot of P(k) vs. k is saved to the data directory. This script must be run for each mock catalog.
 
-Example from a past project:
-[Exoplanet Statistics](https://github.com/ua-2024q3-astr513/ASTRSTATS513_final).
+4. **Compare Results**
+   
+To compare the power spectra produced by each method, execute `err_analysis.py`. This will print results and save them to a text file. This script only needs to run once for all results. It will write numerical results to a text file and generate visualizations of
+- Raw power spectra
+- Interpolated power spectra
+- Residuals
 
-## Requirements
+All plots are saved in the `results` directory in both PDF and PNG formats. Additionally, the $\chi_R^2$ results are saved to the `results` directory in a text file. 
 
-### 1. Code
-
-* Submit well-documented, runnable source code.
-* Include docstrings and inline comments.
-* Update this `README.md` file to explain:
-  * How to install and run your project
-  * Any dependencies or data required
-
-### 2. Presentation
-
-* Deliver a ~ 15 minute presentation on your project.
-* You may use either:
-  * Slides (traditional format), or
-  * A Jupyter notebook (similar to our class style).
-
-Your presentation should:
-* clearly explain the problem you tackled;
-* show the numerical techniques you applied;
-* present results with relevant plots, tables; or figures
-* highlight your findings and insights.
-
-Each team member should be prepared to discuss their contributions.
-
-## Grading (20 points total)
-
-Projects will be graded based on the following criteria:
-1. Originality & clarity of the idea
-2. Quality of the solution (numerical methods, implementation,
-   correctness)
-3. Thoroughness of documentation (code comments, docstrings, README)
-4. Effectiveness of presentation (clarity, structure, visualizations,
-   teamwork)
-
-## Collaboration & GitHub Use
-
-Projects are managed through GitHub Classroom.
-* Multiple students can share a single repository.
-  You can join by putting your unique team name in this
-  [GitHub Classroom link](https://classroom.github.com/a/nqfiwWTG).
-* Use GitHub to track progress, manage code, and collaborate.
-* Only one final submission per team is needed.
-
-## Final Note
-
-This project is your chance to be creative, apply what you have
-learned so far, and work collaboratively on a meaningful computational
-astrophysics problem.
-We look forward to your results!
