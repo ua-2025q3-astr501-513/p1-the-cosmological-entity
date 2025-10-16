@@ -20,15 +20,20 @@ All following steps should be run within the main directory of this project, usi
     ```
 
 ## Workflow
-1. Create the mock catalogs by running `generate_mock.py`. This script produces mock catalogs and saves them within the data directory. The ("truth") power spectrum used to produce the mock catalog can be calculated using `calc_pk.py` and is stored in the `data` directory. Each mock catalog should have a matching truth power spectrum saved.
+1. **Generate Mock Catalogs**
 
-2. Compute Power Spectrum via Hankel Method 
+Create the mock catalogs by running `generate_mock.py`. This script produces mock catalogs and saves them within the data directory. The ("truth") power spectrum used to produce the mock catalog can be calculated using `calc_pk.py` and is stored in the `data` directory. Each mock catalog should have a matching truth power spectrum saved.
+
+2. **Compute Power Spectrum via Hankel Method**
+   
 Execute `run_henkel_pk.py`. This method requires [Corrfunc](https://github.com/manodeep/Corrfunc/tree/master) to be installed (documentation found [here](https://app.readthedocs.org/projects/corrfunc/downloads/pdf/docs/)). **Corrfunc** is a high-performance Python/C library designed to efficiently compute pair counts and two-point correlation functions for large-scale structure analyses. The Corrfunc documentation lists several prerequisites for installation and provides multiple installation methods. This method loads the mock catalog and saves the power spectrum information in the `data` directory. **Note:** this method is computationally expensive and can take a significant amount of time. We ran this only once for the entire mock catalog.
 
-3. Compute Power Spectrum via Fourier Transform
+3. **Compute Power Spectrum via Fourier Transform**
+
 Run `fft_pk.py`. This loads the mock catalog and calculates the power spectrum using the squared Fourier modes of the galaxy overdensity field. The power spectrum values and a plot of P(k) vs. k is saved to the data directory. This script must be run for each mock catalog.
 
-4. Compare Results
+4. **Compare Results**
+   
 To compare the power spectra produced by each method, execute `err_analysis.py`. This will print results and save them to a text file. This script only needs to run once for all results. It will write numerical results to a text file and generate visualizations of
 - Raw power spectra
 - Interpolated power spectra
