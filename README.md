@@ -38,5 +38,6 @@ To compare the power spectra produced by each method, execute `err_analysis.py`.
 - Raw power spectra
 - Interpolated power spectra
 - Residuals
+
 All plots are saved in the `results` directory in both PDF and PNG formats. Additionally, the $\chi_R^2$ results are saved to the `results` directory in a text file. 
 
